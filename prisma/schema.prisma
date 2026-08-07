@@ -1,0 +1,68 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  description String   @default("")
+  status      String   @default("planning")
+  techStack   String   @default("")
+  repoUrl     String   @default("")
+  liveUrl     String   @default("")
+  deadline    DateTime?
+  priority    String   @default("medium")
+  progress    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Task[]
+  notes       Note[]
+  links       QuickLink[]
+}
+
+model Task {
+  id          String   @id @default(cuid()) @map("_id")
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String   @default("")
+  status      String   @default("todo")
+  priority    String   @default("medium")
+  dueDate     DateTime?
+  labels      String   @default("")
+  checklist   String   @default("[]")
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([projectId, status])
+}
+
+model Note {
+  id        String   @id @default(cuid()) @map("_id")
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title     String
+  content   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model QuickLink {
+  id        String   @id @default(cuid()) @map("_id")
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  label     String
+  url       String
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
