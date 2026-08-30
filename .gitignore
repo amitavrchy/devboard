@@ -30,7 +30,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files
-.env
 .env*.local
 
 # vercel
@@ -53,3 +52,4 @@ CLAUDE.md
 
 # Local Netlify folder
 .netlify
+config.bat
